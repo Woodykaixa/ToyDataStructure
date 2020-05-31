@@ -1,38 +1,29 @@
 #pragma once
 
-#include "map.h"
 #include "list.h"
+#include "map.h"
 
 namespace cym {
-    template<typename K>
+    template <typename K>
     class set {
-    private:
-        map<K, char> *_map;
+      private:
+        map<K, char>* _map;
         static constexpr char default_value = 'a';
-    public:
+
+      public:
         explicit set(const size_t size = 16, const double factor = 0.75) {
             _map = new map<K, char>(size, factor);
         }
 
-        void put(K key) const {
-            _map->put(key, default_value);
-        }
+        void put(K key) const { _map->put(key, default_value); }
 
-        bool has(K key) const {
-            return _map->has(key);
-        }
+        bool has(K key) const { return _map->has(key); }
 
-        void remove(K key) const {
-            _map->remove(key);
-        }
+        void remove(K key) const { _map->remove(key); }
 
-        bool empty() const {
-            return _map->empty();
-        }
+        bool empty() const { return _map->empty(); }
 
-        size_t count() const {
-            return _map->get_used_count();
-        }
+        size_t count() const { return _map->get_used_count(); }
 
         list<K> get_all() const {
             list<K> keys(_map->size());
@@ -42,6 +33,5 @@ namespace cym {
             }
             return keys;
         }
-
     };
-}
+} // namespace cym

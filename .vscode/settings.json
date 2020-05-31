@@ -1,0 +1,12 @@
+{
+  "C_Cpp.clang_format_style": "file",
+  "files.associations": {
+    "*.md": "markdown",
+    "iostream": "cpp",
+    "*.cjson": "jsonc",
+    "*.wxss": "css",
+    "*.wxs": "javascript",
+    "*.h": "cpp",
+    "initializer_list": "cpp"
+  }
+}

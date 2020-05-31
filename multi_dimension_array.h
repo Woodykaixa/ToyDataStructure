@@ -1,22 +1,22 @@
 #pragma once
 
-#include <initializer_list>
 #include <cstring>
+#include <initializer_list>
 
 namespace cym {
 
-    template<typename T, size_t dimension>
+    template <typename T, size_t dimension>
     class static_multi_dimension_array {
-    private:
+      private:
         size_t _total;
-        size_t *_size_arr;
-        T *_val_arr;
+        size_t* _size_arr;
+        T* _val_arr;
         using arr_ty = size_t (&)[dimension];
 
-        static void copy_to_array(std::initializer_list<size_t>
-                                  &list, arr_ty container) {
+        static void copy_to_array(std::initializer_list<size_t>& list,
+                                  arr_ty container) {
             int index = 0;
-            for (const auto &l:list) {
+            for (const auto& l : list) {
                 container[index++] = l;
                 if (index == dimension) {
                     break;
@@ -40,7 +40,7 @@ namespace cym {
             _val_arr = new T[_total];
         }
 
-    public:
+      public:
         explicit static_multi_dimension_array(arr_ty sizes) {
             _size_arr = new size_t[dimension];
             memcpy(_size_arr, sizes, sizeof(size_t) * dimension);
@@ -55,20 +55,21 @@ namespace cym {
         }
 
         explicit static_multi_dimension_array(arr_ty sizes, T init_value)
-                : static_multi_dimension_array(sizes) {
+            : static_multi_dimension_array(sizes) {
             for (int i = 0; i < _total; ++i) {
                 _val_arr[i] = init_value;
             }
         }
 
-        static_multi_dimension_array(std::initializer_list<size_t> &&size_list) {
+        static_multi_dimension_array(
+            std::initializer_list<size_t>&& size_list) {
             size_t arr[dimension];
             copy_to_array(size_list, arr);
             delegate_init(arr);
-
         }
 
-        static_multi_dimension_array(std::initializer_list<size_t> &&size_list, T init_value) {
+        static_multi_dimension_array(std::initializer_list<size_t>&& size_list,
+                                     T init_value) {
             size_t arr[dimension];
             copy_to_array(size_list, arr);
             delegate_init(arr);
@@ -77,7 +78,8 @@ namespace cym {
             }
         }
 
-        static_multi_dimension_array(const static_multi_dimension_array &&rhs) noexcept {
+        static_multi_dimension_array(
+            const static_multi_dimension_array&& rhs) noexcept {
             _total = rhs._total;
             _size_arr = new size_t[dimension];
             memcpy(_size_arr, rhs._size_arr, sizeof(size_t) * dimension);
@@ -85,10 +87,10 @@ namespace cym {
             memcpy(_val_arr, rhs._val_arr, sizeof(T) * _total);
         }
 
-        static_multi_dimension_array(const static_multi_dimension_array &rhs) : static_multi_dimension_array(
-                std::move(rhs)) {}
+        static_multi_dimension_array(const static_multi_dimension_array& rhs)
+            : static_multi_dimension_array(std::move(rhs)) {}
 
-        T &visit(arr_ty locations) {
+        T& visit(arr_ty locations) {
             size_t ind = locations[dimension - 1];
             for (int i = 0; i < dimension - 1; ++i) {
                 ind += locations[i] * _size_arr[i + 1];
@@ -96,11 +98,10 @@ namespace cym {
             return _val_arr[ind];
         }
 
-        T &visit(std::initializer_list<size_t> &&locations) {
+        T& visit(std::initializer_list<size_t>&& locations) {
             size_t arr[dimension];
             copy_to_array(locations, arr);
             return visit(arr);
-
         }
     };
-}
+} // namespace cym
