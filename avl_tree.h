@@ -3,6 +3,8 @@ namespace cym {
     class avl_tree {
 
       public:
+        enum class iteration_direction { Left, Right };
+
         class avl_node {
 
           private:
@@ -11,6 +13,7 @@ namespace cym {
             avl_node* _right;
             int _height;
             int _balance_factor;
+            friend class avl_tree;
 
           public:
             avl_node(T v)
@@ -66,15 +69,78 @@ namespace cym {
                 return old;
             }
 
+            /**
+             * Append param `node` as new subtree. Use param `dir` to specify
+             * append left or right. Return the old subtree.
+             *
+             * @param node the new child to append
+             * @param dir the direction to append child
+             * @return the old child
+             */
+            avl_node* append(avl_node* node, iteration_direction& dir) {
+                if (dir == iteration_direction::Left) {
+                    return append_left(node);
+                }
+                return append_right(node);
+            }
+
+            avl_node* append(avl_node* node, iteration_direction&& dir) {
+                if (dir == iteration_direction::Left) {
+                    return append_left(node);
+                }
+                return append_right(node);
+            }
+
             int height() const { return _height; }
             int balance_factor() const { return _balance_factor; }
         };
 
         avl_tree() { _root = nullptr; }
 
+        /**
+         * Insert a T-type value into AVL Tree. If param `e` is already in AVL
+         * Tree, this function do nothing, otherwise it will insert `e` to
+         * proper location just like Binary Search Tree, then it will call
+         * `rebalance()`.
+         *
+         * @param e The value to insert.
+         */
+        void insert(T e) {
+            avl_node* node = new avl_node(e);
+            if (_root == nullptr) {
+                _root = node;
+                return;
+            }
+
+            avl_node* tmp = _root;
+            dir_t dir;
+            avl_node* pre = nullptr;
+            while (tmp != nullptr) {
+                if (tmp->_value == e) {
+                    return;
+                }
+                pre = tmp;
+                if (tmp->_value < e) {
+                    dir = dir_t::Right;
+                    tmp = tmp->_right;
+                } else {
+                    dir = dir_t::Left;
+                    tmp = tmp->_left;
+                }
+            }
+            pre->append(node, dir);
+
+            rebalance(); // N/A
+        }
+
+        size_t height() const {
+            return _root == nullptr ? 0 : _root->height() + 1;
+        }
 
       private:
+        using dir_t = iteration_direction;
         avl_node* _root;
+        void rebalance() {}
     };
 
 } // namespace cym
